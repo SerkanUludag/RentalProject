@@ -31,7 +31,7 @@ namespace Business.Concrete
             }
             else
             {
-                return new ErrorResult(v);
+                return new ErrorResult("Car is not avaible");
             }
             
         }

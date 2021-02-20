@@ -14,10 +14,10 @@ namespace ConsoleUI
 
 
             Rental r = new Rental();
-            r.Id = 1;
+            r.Id = 3;
             r.CustomerId = 1;
             r.CarId = 2;
-            r.RentDate = new DateTime(2020, 10, 15);
+            r.RentDate = new DateTime(2020,10,10,20,19,00);
 
             RentalManager rm = new RentalManager(new EfRentalDal());
 
