@@ -20,5 +20,7 @@ namespace Business.Abstract
         IDataResult<List<Car>> GetCarsByColorId(int id);
 
         IDataResult<List<CarDetailDto>> GetCarDetails(Expression<Func<Car, bool>> filter = null);
+
+        
     }
 }

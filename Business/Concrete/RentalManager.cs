@@ -94,6 +94,7 @@ namespace Business.Concrete
             }
         }
 
+        [ValidationAspect(typeof(RentalValidator))]
         public IResult Update(Rental entity)
         {
             _rentalDal.Update(entity);

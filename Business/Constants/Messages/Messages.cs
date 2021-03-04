@@ -12,5 +12,6 @@ namespace Business.Constants.Messages
         public static string Error = "Error";
         public static string Listed = "Listed";
         public static string Success = "Success";
+        public static string MoreThanFiveImageError = "Cars cannot have more than 5 images";
     }
 }

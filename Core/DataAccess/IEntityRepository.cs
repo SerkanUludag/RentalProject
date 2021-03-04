@@ -9,7 +9,6 @@ namespace Core.DataAccess
 {
     public interface IEntityRepository<T> where T:class,IEntity
     {
-        //GetById, GetAll, Add, Update, Delete
 
         T Get(Expression<Func<T, bool>> filter);
 
