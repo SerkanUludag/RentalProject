@@ -7,60 +7,32 @@ using System.Collections.Generic;
 using System.Text;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
+using Core.Entities.Concrete;
 
 namespace Business.Concrete
 {
     public class UserManager : IUserService
     {
-        IUserDal _UserDal;
+        IUserDal _userDal;
 
-        public UserManager(IUserDal UserDal)
+        public UserManager(IUserDal userDal)
         {
-            _UserDal = UserDal;
+            _userDal = userDal;
         }
 
-        [ValidationAspect(typeof(UserValidator))]
-        public IResult Add(User entity)
+        public List<OperationClaim> GetClaims(User user)
         {
-            _UserDal.Add(entity);
-            return new SuccessResult("User added succesfully");
-
+            return _userDal.GetClaims(user);
         }
 
-        public IResult Delete(User entity)
+        public void Add(User user)
         {
-            _UserDal.Delete(entity);
-            return new SuccessResult("User deleted successfully");
+            _userDal.Add(user);
         }
 
-        public IDataResult<List<User>> GetAll()
+        public User GetByMail(string email)
         {
-            if (_UserDal.GetAll().Count > 0)
-            {
-                return new SuccessDataResult<List<User>>(_UserDal.GetAll());
-            }
-            else
-            {
-                return new ErrorDataResult<List<User>>("No car found");
-            }
-        }
-
-        public IDataResult<User> GetById(int id)
-        {
-            if (_UserDal.Get(b => b.Id == id) != null)                      // check
-            {
-                return new SuccessDataResult<User>(_UserDal.Get(b => b.Id == id));
-            }
-            else
-            {
-                return new ErrorDataResult<User>("Car with given id is not found");
-            }
-        }
-
-        public IResult Update(User entity)
-        {
-            _UserDal.Update(entity);
-            return new SuccessResult("Car updated!");
+            return _userDal.Get(u => u.Email == email);
         }
     }
 }
