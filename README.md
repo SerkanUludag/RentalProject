@@ -1,4 +1,4 @@
-# rental-project
+# rent-a-car-project
 
 Car rental system designed in accordance with SOLID principles of OOP;
 
