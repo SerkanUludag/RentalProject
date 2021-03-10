@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -20,6 +21,7 @@ namespace Business.Concrete
         }
 
         [ValidationAspect(typeof(CustomerValidator))]
+        [CacheRemoveAspect("ICustomerService.Get")]
         public IResult Add(Customer entity)
         {
             _CustomerDal.Add(entity);
@@ -27,12 +29,7 @@ namespace Business.Concrete
 
         }
 
-        public IResult Delete(Customer entity)
-        {
-            _CustomerDal.Delete(entity);
-            return new SuccessResult("Customer deleted successfully");
-        }
-
+        [CacheAspect]
         public IDataResult<List<Customer>> GetAll()
         {
             if (_CustomerDal.GetAll().Count > 0)
@@ -45,6 +42,7 @@ namespace Business.Concrete
             }
         }
 
+        [CacheAspect]
         public IDataResult<Customer> GetById(int id)
         {
             if (_CustomerDal.Get(b => b.UserId == id) != null)                      // check
@@ -57,6 +55,15 @@ namespace Business.Concrete
             }
         }
 
+        [CacheRemoveAspect("ICustomerService.Get")]
+        public IResult Delete(Customer entity)
+        {
+            _CustomerDal.Delete(entity);
+            return new SuccessResult("Customer deleted successfully");
+        }
+
+
+        [CacheRemoveAspect("ICustomerService.Get")]
         public IResult Update(Customer entity)
         {
             _CustomerDal.Update(entity);

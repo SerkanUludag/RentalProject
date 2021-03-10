@@ -15,6 +15,9 @@ namespace Core.Utilities.Interceptors
                 .GetCustomAttributes<MethodInterceptionBaseAttribute>(true);
             classAttributes.AddRange(methodAttributes);
 
+            // if performance aspect or log can be added here to work on system
+            // classAttributes.Add(new ....)
+
             return classAttributes.OrderBy(x => x.Priority).ToArray();
         }
     }

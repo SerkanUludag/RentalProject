@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -21,6 +22,7 @@ namespace Business.Concrete
         }
 
         [ValidationAspect(typeof(BrandValidator))]
+        [CacheRemoveAspect("IBrandService.Get")]
         public IResult Add(Brand entity)
         {
             _brandDal.Add(entity);
@@ -28,15 +30,10 @@ namespace Business.Concrete
             
         }
 
-        public IResult Delete(Brand entity)
-        {
-            _brandDal.Delete(entity);
-            return new SuccessResult("Brand deleted successfully");
-        }
-
+        [CacheAspect]
         public IDataResult<List<Brand>> GetAll()
         {
-            if(_brandDal.GetAll().Count > 0)
+            if (_brandDal.GetAll().Count > 0)
             {
                 return new SuccessDataResult<List<Brand>>(_brandDal.GetAll());
             }
@@ -46,9 +43,10 @@ namespace Business.Concrete
             }
         }
 
+        [CacheAspect]
         public IDataResult<Brand> GetById(int id)
         {
-            if(_brandDal.Get(b => b.Id == id) != null)                      // check
+            if (_brandDal.Get(b => b.Id == id) != null)                      // check
             {
                 return new SuccessDataResult<Brand>(_brandDal.Get(b => b.Id == id));
             }
@@ -58,6 +56,14 @@ namespace Business.Concrete
             }
         }
 
+        [CacheRemoveAspect("IBrandService.Get")]
+        public IResult Delete(Brand entity)
+        {
+            _brandDal.Delete(entity);
+            return new SuccessResult("Brand deleted successfully");
+        }
+
+        [CacheRemoveAspect("IBrandService.Get")]
         public IResult Update(Brand entity)
         {
             _brandDal.Update(entity);

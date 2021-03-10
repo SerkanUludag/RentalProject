@@ -2,6 +2,7 @@
 using Business.BusinessAspects.Autofac;
 using Business.Constants.Messages;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -22,8 +23,10 @@ namespace Business.Concrete
         {
             _rentalDal = RentalDal;
         }
+
         [SecuredOperation("rental.add, admin")]
         [ValidationAspect(typeof(RentalValidator))]
+        [CacheRemoveAspect("IRentalService.Get")]
         public IResult Add(Rental entity)
         {
             var result = checkReturnDate(entity.CarId);
@@ -39,6 +42,41 @@ namespace Business.Concrete
             }
             
         }
+
+        [ValidationAspect(typeof(RentalValidator))]
+        [CacheRemoveAspect("IRentalService.Get")]
+        public IResult Update(Rental entity)
+        {
+            _rentalDal.Update(entity);
+            return new SuccessResult("rental updated!");
+        }
+
+        [CacheAspect]
+        public IDataResult<List<Rental>> GetAll()
+        {
+            if (_rentalDal.GetAll().Count > 0)
+            {
+                return new SuccessDataResult<List<Rental>>(_rentalDal.GetAll());
+            }
+            else
+            {
+                return new ErrorDataResult<List<Rental>>("No rental found");
+            }
+        }
+
+        [CacheAspect]
+        public IDataResult<Rental> GetById(int id)
+        {
+            if (_rentalDal.Get(b => b.Id == id) != null)                      // check
+            {
+                return new SuccessDataResult<Rental>(_rentalDal.Get(b => b.Id == id));
+            }
+            else
+            {
+                return new ErrorDataResult<Rental>("rental with given id is not found");
+            }
+        }
+
         private IResult checkReturnDate(int carId)
         {
             var result = _rentalDal.GetAll(r => r.CarId == carId && r.ReturnDate == default(DateTime));
@@ -52,36 +90,14 @@ namespace Business.Concrete
             }
         }
 
-
+        [CacheRemoveAspect("IRentalService.Get")]
         public IResult Delete(Rental entity)
         {
             _rentalDal.Delete(entity);
             return new SuccessResult("Rental deleted successfully");
         }
 
-        public IDataResult<List<Rental>> GetAll()
-        {
-            if (_rentalDal.GetAll().Count > 0)
-            {
-                return new SuccessDataResult<List<Rental>>(_rentalDal.GetAll());
-            }
-            else
-            {
-                return new ErrorDataResult<List<Rental>>("No rental found");
-            }
-        }
-
-        public IDataResult<Rental> GetById(int id)
-        {
-            if (_rentalDal.Get(b => b.Id == id) != null)                      // check
-            {
-                return new SuccessDataResult<Rental>(_rentalDal.Get(b => b.Id == id));
-            }
-            else
-            {
-                return new ErrorDataResult<Rental>("rental with given id is not found");
-            }
-        }
+        
 
         public IDataResult<List<RentalDetailDto>> GetRentalDetails(Expression<Func<Rental, bool>> filter = null)
         {
@@ -95,11 +111,6 @@ namespace Business.Concrete
             }
         }
 
-        [ValidationAspect(typeof(RentalValidator))]
-        public IResult Update(Rental entity)
-        {
-            _rentalDal.Update(entity);
-            return new SuccessResult("rental updated!");
-        }
+        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants.Messages;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Business;
 using Core.Utilities.Helpers;
@@ -41,13 +42,7 @@ namespace Business.Concrete
             return new SuccessResult("Succesfully added");
         }
 
-        public IResult Delete(CarImage carImage)
-        {
-            FileHelper.Delete(carImage.ImagePath);
-            _carImageDal.Delete(carImage);
-            return new SuccessResult("Successfully deleted");
-        }
-
+        [CacheAspect]
         public IDataResult<List<CarImage>> GetAll()
         {
             var result = _carImageDal.GetAll();
@@ -61,9 +56,10 @@ namespace Business.Concrete
             }
         }
 
+        [CacheAspect]
         public IDataResult<CarImage> GetById(int id)
         {
-            if (_carImageDal.Get(i => i.Id == id) != null)                      
+            if (_carImageDal.Get(i => i.Id == id) != null)
             {
                 return new SuccessDataResult<CarImage>(_carImageDal.Get(b => b.Id == id));
             }
@@ -73,10 +69,19 @@ namespace Business.Concrete
             }
         }
 
+        [CacheAspect]
         public IDataResult<List<CarImage>> GetImagesByCarId(int carId)
         {
             return new SuccessDataResult<List<CarImage>>(CheckIfCarHasImage(carId));
         }
+
+        public IResult Delete(CarImage carImage)
+        {
+            FileHelper.Delete(carImage.ImagePath);
+            _carImageDal.Delete(carImage);
+            return new SuccessResult("Successfully deleted");
+        }
+        
 
         [ValidationAspect(typeof(CarImageValidator))]
         public IResult Update(IFormFile file, CarImage carImage)
