@@ -50,6 +50,8 @@ namespace WepAPI
             //services.AddSingleton<IColorService, ColorManager>();
             //services.AddSingleton<IColorDal, EfColorDal>();
 
+            services.AddCors();
+
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -79,6 +81,8 @@ namespace WepAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader());          // means I trust localhost:4200
 
             app.UseHttpsRedirection();
 
