@@ -86,6 +86,8 @@ namespace WepAPI
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthentication();   //    jwt

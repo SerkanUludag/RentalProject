@@ -13,6 +13,9 @@ namespace Business.Abstract
         IResult Add(Car entity);
 
         IResult Delete(Car entity);
+
+        IDataResult<List<Car>> GetById(int id);
+
         IDataResult<List<Car>> GetAll();
 
         IDataResult<List<Car>> GetCarsByBrandId(int id);
@@ -21,6 +24,8 @@ namespace Business.Abstract
 
         IDataResult<List<CarDetailDto>> GetCarDetails(Expression<Func<Car, bool>> filter = null);
 
-        
+        IDataResult<List<CarDetailDto>> GetCarDetailsById(Expression<Func<Car, bool>> filter = null);
+
+
     }
 }

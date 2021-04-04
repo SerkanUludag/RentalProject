@@ -45,6 +45,20 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
+        public IDataResult<List<Car>> GetById(int id)
+        {
+            if (_carDal.GetAll(c => c.Id == id).Count > 0)
+            {
+                return new SuccessDataResult<List<Car>>(_carDal.GetAll(c => c.Id == id));
+            }
+            else
+            {
+                return new ErrorDataResult<List<Car>>("No car found with this id");
+            }
+
+        }
+
+        [CacheAspect]
         public IDataResult<List<Car>> GetCarsByBrandId(int id)
         {
             if (_carDal.GetAll(c => c.BrandId == id).Count > 0)
@@ -71,7 +85,7 @@ namespace Business.Concrete
             }
         }
 
-        [CacheAspect]
+        
         public IDataResult<List<CarDetailDto>> GetCarDetails(Expression<Func<Car, bool>> filter = null)
         {
             if (_carDal.GetCarDetails(filter).Count > 0)
@@ -91,6 +105,16 @@ namespace Business.Concrete
             return new SuccessResult("Succesfully deleted");
         }
 
-        
+        public IDataResult<List<CarDetailDto>> GetCarDetailsById(Expression<Func<Car, bool>> filter = null)
+        {
+            if (_carDal.GetCarDetails(filter).Count > 0)
+            {
+                return new SuccessDataResult<List<CarDetailDto>>(_carDal.GetCarDetails(filter));
+            }
+            else
+            {
+                return new ErrorDataResult<List<CarDetailDto>>("No car found with this id");
+            }
+        }
     }
 }

@@ -11,15 +11,45 @@ namespace Core.Utilities.Helpers
     {
         public static string Add(IFormFile file)
         {
-            var sourcePath = newPath(file);
-            using (var stream = new FileStream(sourcePath, FileMode.Create))
+            var result = newPath(file);
+            try
             {
-                file.CopyTo(stream);
+                var sourcePath = Path.GetTempFileName();
+                if (file.Length > 0)
+                {
+                    using (var stream = new FileStream(sourcePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);                       
+                    }
+                    File.Move(sourcePath, result.newPath);
+                }               
             }
+            catch (Exception exception)
+            {
+                return exception.Message;
+            }
+            return result.dbImagePath;
+        }
 
-            //var customPath = newPath(file);
-            //File.Move(sourcePath, customPath);
-            return sourcePath;
+        public static string Update(string sourcePath, IFormFile file)
+        {
+            var result = newPath(file);
+            try
+            {
+                if (sourcePath.Length > 0)
+                {
+                    using (var stream = new FileStream(result.newPath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+                }
+                File.Delete(sourcePath);
+            }
+            catch (Exception exception)
+            {
+                return exception.Message;
+            }
+            return result.dbImagePath;
         }
 
         public static IResult Delete(string path)
@@ -28,38 +58,27 @@ namespace Core.Utilities.Helpers
             {
                 File.Delete(path);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                return new ErrorResult(e.Message);
+                return new ErrorResult(exception.Message);
             }
+
             return new SuccessResult();
         }
 
-        public static string Update(string sourcePath, IFormFile file)
+        public static (string newPath, string dbImagePath) newPath(IFormFile file)
         {
-            var np = newPath(file);
-            if (sourcePath.Length > 0)
-            {
-                using (var stream = new FileStream(np, FileMode.Create))
-                {
-                    file.CopyTo(stream);
-                }
-            }
-            File.Delete(sourcePath);
-            return np;
-        }
+            FileInfo ff = new FileInfo(file.FileName);
+            string fileExtension = ff.Extension;
 
-        private static string newPath(IFormFile file)
-        {
-            string fileExtension = Path.GetExtension(file.FileName);
+            var newUniqueName = Guid.NewGuid() + fileExtension;
 
-            string path = Environment.CurrentDirectory + @"\.." + @"\Images";
 
-            var newPath = Guid.NewGuid().ToString() + "--" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + fileExtension;
+            string path = Environment.CurrentDirectory + @"\wwwroot\uploads";
 
-            string result = $@"{path}\{newPath}";
+            string result = $@"{path}\{newUniqueName}";
 
-            return result;
+            return (result, $"\\uploads\\{newUniqueName}");
         }
     }
 }

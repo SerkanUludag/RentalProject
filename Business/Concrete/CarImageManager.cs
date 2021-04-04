@@ -24,7 +24,7 @@ namespace Business.Concrete
             _carImageDal = carImageDal;
         }
 
-        [ValidationAspect(typeof(CarImageValidator))]
+        //[ValidationAspect(typeof(CarImageValidator))]
         public IResult Add(IFormFile file, CarImage carImage)
         {
 
@@ -105,15 +105,21 @@ namespace Business.Concrete
 
         private List<CarImage> CheckIfCarHasImage(int carId)
         {
-            const string defaultPath = @"C:\Users\hsulu\Desktop\rental-project\Images\logo.jpg";
-
+            
+            string path = @"\uploads\default.png";
 
             var result = _carImageDal.GetAll(i => i.CarId == carId).Any();
-            if(!result)
+
+            if (!result)
             {
-                return new List<CarImage> { new CarImage { CarId = carId, ImagePath = defaultPath, Date = DateTime.Now } };
+                List<CarImage> carImage = new List<CarImage>();
+
+                carImage.Add(new CarImage { CarId = carId, ImagePath = path, Date = DateTime.Now });
+
+                return carImage;
             }
-            return _carImageDal.GetAll(i => i.CarId == carId);
+
+            return _carImageDal.GetAll(c => c.CarId == carId);
         }
     }
 }
