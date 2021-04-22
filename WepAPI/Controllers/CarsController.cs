@@ -128,5 +128,12 @@ namespace WepAPI.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpGet("filter")]
+        public IActionResult Filter(int brandId, int colorId)
+        {
+            var result = _CarService.GetCarDetails(c => c.BrandId == brandId && c.ColorId == colorId);
+            return Ok(result);
+        }
     }
 }

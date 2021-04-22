@@ -79,11 +79,26 @@ namespace WepAPI.Controllers
         public IActionResult Add(Rental rental)
         {
             var result = _rentalService.Add(rental);
+
+            return Ok(result);
+        }
+
+        [HttpGet("getbycarid")]
+        public IActionResult GetByCarId(int id)
+        {
+            var result = _rentalService.GetById(id);
             if (result.Success)
             {
                 return Ok(result);
             }
             return BadRequest(result);
+        }
+
+        [HttpPost("checkrental")]
+        public IActionResult CheckRental(Rental rental)
+        {
+            var result = _rentalService.CheckRentalAvailable(rental);
+            return Ok(result);
         }
 
 

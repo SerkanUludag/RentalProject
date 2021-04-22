@@ -24,12 +24,12 @@ namespace Business.Concrete
             _rentalDal = RentalDal;
         }
 
-        [SecuredOperation("rental.add, admin")]
+        //[SecuredOperation("rental.add, admin")]
         [ValidationAspect(typeof(RentalValidator))]
         [CacheRemoveAspect("IRentalService.Get")]
         public IResult Add(Rental entity)
         {
-            var result = checkReturnDate(entity.CarId);
+            var result = CheckRentalAvailable(entity);
 
             if(result.Success == true)
             {
@@ -77,9 +77,9 @@ namespace Business.Concrete
             }
         }
 
-        private IResult checkReturnDate(int carId)
+        public IResult CheckRentalAvailable(Rental rental)
         {
-            var result = _rentalDal.GetAll(r => r.CarId == carId && r.ReturnDate == default(DateTime));
+            var result = _rentalDal.GetAll(r => r.CarId == rental.CarId && (r.RentDate <= rental.ReturnDate && r.ReturnDate >= rental.RentDate));
             if(result.Count > 0)
             {
                 return new ErrorResult();
@@ -110,7 +110,5 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<RentalDetailDto>>("No rental found with this filter");
             }
         }
-
-        
     }
 }
