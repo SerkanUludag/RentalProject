@@ -82,6 +82,8 @@ namespace WepAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.ConfigureCustomExceptionMiddleware();   // custom middleware
+
             app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader());          // means I trust localhost:4200
 
             app.UseHttpsRedirection();
