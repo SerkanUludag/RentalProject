@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
@@ -19,6 +20,8 @@ namespace Business.Concrete
         {
             _ColorDal = ColorDal;
         }
+
+        [SecuredOperation("admin")]
         [CacheRemoveAspect("IColorService.Get")]
         [ValidationAspect(typeof(ColorValidator))]
         public IResult Add(Color entity)
