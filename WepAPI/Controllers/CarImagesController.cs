@@ -19,10 +19,10 @@ namespace WepAPI.Controllers
             _carImageService = carImageService;
         }
 
-        [HttpPost("add")]
-        public IActionResult Add([FromForm(Name = ("Image"))] IFormFile file, [FromForm] CarImage carImage)
+        [HttpPost("add")]                                                          
+        public IActionResult Add([FromForm(Name = ("Image"))] IFormFile file, [FromForm(Name = ("CarId"))] int carId)
         {
-            var result = _carImageService.Add(file, carImage);
+            var result = _carImageService.Add(file, carId);
             if (result.Success)
             {
                 return Ok(result);

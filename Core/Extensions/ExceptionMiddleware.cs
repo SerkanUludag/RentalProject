@@ -34,6 +34,7 @@ namespace Core.Extensions
         {
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            
 
             string message = "Internal Server Error";
             IEnumerable<ValidationFailure> errors;
@@ -51,6 +52,19 @@ namespace Core.Extensions
 
                 }.ToString());
 
+            }
+            // unauthorized CHECK *****************
+            else if(e.Message == "Authorization denied")
+            {
+
+                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                
+                return httpContext.Response.WriteAsync(new ErrorDetails
+                {
+                    StatusCode = httpContext.Response.StatusCode,
+                    Message = e.Message
+
+                }.ToString());
             }
             //system errors
             return httpContext.Response.WriteAsync(new ErrorDetails

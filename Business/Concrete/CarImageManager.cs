@@ -25,18 +25,23 @@ namespace Business.Concrete
         }
 
         //[ValidationAspect(typeof(CarImageValidator))]
-        public IResult Add(IFormFile file, CarImage carImage)
+        public IResult Add(IFormFile file, int carId)
         {
 
-            IResult result = BusinessRules.Run(CheckIfCarHasMoreThanFiveImages(carImage.CarId));
+            IResult result = BusinessRules.Run(CheckIfCarHasMoreThanFiveImages(carId));
 
             if (result != null)
             {
                 return result;
             }
 
-            carImage.ImagePath = FileHelper.Add(file);
-            carImage.Date = DateTime.Now;
+            CarImage carImage = new CarImage
+            {
+                CarId = carId,
+                ImagePath = FileHelper.Add(file),
+                Date = DateTime.Now
+        };
+
             _carImageDal.Add(carImage);
 
             return new SuccessResult("Succesfully added");
@@ -84,10 +89,12 @@ namespace Business.Concrete
         
 
         [ValidationAspect(typeof(CarImageValidator))]
-        public IResult Update(IFormFile file, CarImage carImage)
+        public IResult Update(IFormFile file, CarImage carImage)        
         {
-            carImage.ImagePath = FileHelper.Update(_carImageDal.Get(i => i.Id == carImage.Id).ImagePath, file);
+
             carImage.Date = DateTime.Now;
+            carImage.ImagePath = FileHelper.Update(_carImageDal.Get(i => i.Id == carImage.Id).ImagePath, file);
+            
             _carImageDal.Update(carImage);
             return new SuccessResult("Succesfully updated");
 

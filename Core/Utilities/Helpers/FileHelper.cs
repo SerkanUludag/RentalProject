@@ -42,8 +42,9 @@ namespace Core.Utilities.Helpers
                     {
                         file.CopyTo(stream);
                     }
+                    File.Delete(Environment.CurrentDirectory + @"\wwwroot" + sourcePath);
                 }
-                File.Delete(sourcePath);
+
             }
             catch (Exception exception)
             {

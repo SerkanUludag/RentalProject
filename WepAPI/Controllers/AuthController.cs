@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Core.Entities.Concrete;
+using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Concrete.DTOs;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace WepAPI.Controllers
     public class AuthController : Controller
     {
         private IAuthService _authService;
+        private IUserService _userService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IUserService userService)
         {
             _authService = authService;
+            _userService = userService;
         }
 
         [HttpPost("login")]
@@ -56,6 +59,37 @@ namespace WepAPI.Controllers
             }
 
             return BadRequest(result);
+        }
+
+        [HttpGet("getloggeduser")]
+        public IActionResult GetLoggedUser(string email)
+        {
+            var user = _userService.GetByMail(email);
+            UserInformationDto userInformation = new UserInformationDto { UserId = user.Id, FirstName = user.FirstName, LastName = user.LastName, Email = user.Email };
+            if (user != null)
+            {
+                return Ok(userInformation);
+            }
+            return BadRequest("Wrong email");
+        }
+
+        [HttpPost("updateuser")]
+        public IActionResult UpdateUser(UserInformationDto userInfo)
+        {
+            var userToUpdate = _userService.GetByMail(userInfo.Email);
+            userToUpdate.FirstName = userInfo.FirstName;
+            userToUpdate.LastName = userInfo.LastName;
+            userToUpdate.Email = userInfo.Email;
+            _userService.Update(userToUpdate);
+            return Ok(new SuccessResult("Updated"));
+        }
+
+        [HttpPost("updatepassword")]
+        public IActionResult UpdatePassword([FromForm(Name = "password")] string password, [FromForm(Name = "email")] string email)
+        {
+            _userService.UpdatePassword(password, email);
+            return Ok(new SuccessResult("Password changed"));
+            
         }
     }
 }

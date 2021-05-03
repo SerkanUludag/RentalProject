@@ -8,6 +8,7 @@ using System.Text;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
+using Core.Security.Hashing;
 
 namespace Business.Concrete
 {
@@ -33,6 +34,23 @@ namespace Business.Concrete
         public User GetByMail(string email)
         {
             return _userDal.Get(u => u.Email == email);
+        }
+
+        [ValidationAspect(typeof(UserValidator))]
+        public void Update(User user)
+        {
+            _userDal.Update(user);
+        }
+
+        public void UpdatePassword(string password, string email)
+        {
+            byte[] passwordHash, passwordSalt;
+            var userToUpdate = GetByMail(email);
+            HashingHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            userToUpdate.PasswordHash = passwordHash;
+            userToUpdate.PasswordSalt = passwordSalt;
+            Update(userToUpdate);
+
         }
     }
 }
